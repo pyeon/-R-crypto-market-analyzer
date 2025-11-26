@@ -1,0 +1,36 @@
+name: Buy Signal Analysis
+
+on:
+  schedule:
+    - cron: '0 */2 * * *'  # 매 2시간
+  workflow_dispatch:
+
+jobs:
+  analyze-buy-signals:
+    runs-on: ubuntu-latest
+    
+    permissions:
+      contents: write
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+      
+      - name: Run buy signal analysis
+        env:
+          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+          CHAT_ID: ${{ secrets.CHAT_ID }}
+          TZ: Asia/Seoul
+        run: |
+          python analyze_buy_signals.py
