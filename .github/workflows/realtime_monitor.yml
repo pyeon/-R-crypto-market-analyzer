@@ -1,0 +1,36 @@
+name: Realtime Market Monitor
+
+on:
+  schedule:
+    - cron: '30 */2 * * *'  # 매 2시간 30분 (매수와 30분 차이)
+  workflow_dispatch:
+
+jobs:
+  realtime-monitor:
+    runs-on: ubuntu-latest
+    
+    permissions:
+      contents: write
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+      
+      - name: Run realtime monitor
+        env:
+          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+          CHAT_ID: ${{ secrets.CHAT_ID }}
+          TZ: Asia/Seoul
+        run: |
+          python analyze_realtime_monitor.py
